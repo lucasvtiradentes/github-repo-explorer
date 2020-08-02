@@ -52,6 +52,7 @@
         "tsx": "never"
       }
     ],
+    "react/jsx-one-expression-per-line": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "no-console": "off",
     "camelcase": "off"
