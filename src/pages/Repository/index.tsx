@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouteMatch, Link } from 'react-router-dom';
 import { FiChevronLeft } from 'react-icons/fi';
+import api from '../../services/api';
 
 import { Header, RepositoryInfo, Issues } from './style';
 import logoImg from '../../assets/logo.svg';
@@ -11,8 +12,41 @@ interface RepositoryParams {
   repository: string;
 }
 
+interface Repository {
+  full_name: string;
+  description: string;
+  stargazers_count: number;
+  forks_count: number;
+  open_issues_count: number;
+  owner: {
+    login: string;
+    avatar_url: string;
+  };
+}
+
+interface Issue {
+  id: number;
+  title: string;
+  html_url: string;
+  user: {
+    login: string;
+  };
+}
+
 const Repository: React.FC = () => {
   const { params } = useRouteMatch<RepositoryParams>();
+  const [repository, setRepository] = useState<Repository | null>(null);
+  const [issues, setIssues] = useState<Issue[]>([]);
+
+  useEffect(() => {
+    api.get(`repos/${params.repository}`).then((response) => {
+      setRepository(response.data);
+    });
+
+    api.get(`repos/${params.repository}/issues`).then((response) => {
+      setIssues(response.data);
+    });
+  }, [params.repository]);
 
   return (
     <>
@@ -24,41 +58,45 @@ const Repository: React.FC = () => {
         </Link>
       </Header>
 
-      <RepositoryInfo>
-        <header>
-          <img
-            src="https://avatars1.githubusercontent.com/u/32181918?s=460&u=33515903926c96c56e2ffbbb9104bb9edcbe2fcb&v=4"
-            alt=""
-          />
-          <div>
-            <strong>rocketseat/unform</strong>
-            <p>Descrição</p>
-          </div>
-        </header>
+      {repository && (
+        <RepositoryInfo>
+          <header>
+            <img
+              src={repository.owner.avatar_url}
+              alt={repository.owner.login}
+            />
+            <div>
+              <strong>{repository.full_name}</strong>
+              <p>{repository.description}</p>
+            </div>
+          </header>
 
-        <ul>
-          <li>
-            <strong>1808</strong>
-            <span>Stars</span>
-          </li>
-          <li>
-            <strong>48</strong>
-            <span>Forks</span>
-          </li>
-          <li>
-            <strong>67</strong>
-            <span>Issues</span>
-          </li>
-        </ul>
-      </RepositoryInfo>
+          <ul>
+            <li>
+              <strong>{repository.stargazers_count}</strong>
+              <span>Stars</span>
+            </li>
+            <li>
+              <strong>{repository.forks_count}</strong>
+              <span>Forks</span>
+            </li>
+            <li>
+              <strong>{repository.open_issues_count}</strong>
+              <span>Issues</span>
+            </li>
+          </ul>
+        </RepositoryInfo>
+      )}
 
       <Issues>
-        <Link to="asdasd">
-          <div>
-            <strong>asd</strong>
-            <p>description</p>
-          </div>
-        </Link>
+        {issues.map((issue) => (
+          <a key={issue.id} href={issue.html_url}>
+            <div>
+              <strong>{issue.title}</strong>
+              <p>{issue.id}</p>
+            </div>
+          </a>
+        ))}
       </Issues>
     </>
   );

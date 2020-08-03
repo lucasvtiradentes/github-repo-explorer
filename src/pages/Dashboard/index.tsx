@@ -5,7 +5,6 @@ import logoImg from '../../assets/logo.svg';
 import { Title, Form, Repositories, Error } from './style';
 
 import api from '../../services/api';
-import Repository from '../Repository';
 
 interface Repository {
   full_name: string;
