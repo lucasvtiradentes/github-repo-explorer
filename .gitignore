@@ -1,0 +1,9 @@
+# FOLDERS ###########################
+node_modules/
+dist/
+offline/
+
+# FILES #############################
+pnpm-lock.yaml
+json-lock.json
+yarn-lock.json
